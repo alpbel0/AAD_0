@@ -11,6 +11,7 @@ import { KalorisizKodFormService } from './services/kalorisiz-kod-form.service';
 import { CheckoutService } from './services/checkout.service';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
@@ -25,10 +26,23 @@ import { RegisterComponent } from './components/register/register.component';
     NgbModule,
     CartStatusComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    NavbarComponent
   ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  template: `
+    <div class="page-wrapper">
+      <app-navbar> </app-navbar>
+      <div class="content-wrapper">
+        <aside class="menu-sidebar d-none d-lg-block">
+          <app-product-category-menu></app-product-category-menu>
+        </aside>
+        <div class="main-content">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  `,
+  styleUrls: ['./app.component.css'],
   providers: [ProductService, KalorisizKodFormService, CheckoutService]
 })
 export class AppComponent {

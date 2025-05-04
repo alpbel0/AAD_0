@@ -97,19 +97,17 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
       return;
     }
 
-    const { username, password } = this.loginForm.value;
-
-    this.authService.login(username, password).subscribe({
-      next: () => {
-        this.router.navigate(['/products']);
-      },
-      error: err => {
-        this.errorMessage = err.error?.message || 'Giriş başarısız';
-      }
-    });
+    this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/products']);
+        },
+        error: error => {
+          this.errorMessage = error?.error?.message || 'Giriş başarısız';
+        }
+      });
   }
 }
