@@ -31,9 +31,21 @@ export class ProductListComponent {
   }
 
   ngOnInit() {
+    // İlk yüklemede tüm ürünleri getir
+    this.loadAllProducts();
+
+    // Route değişikliklerini dinle
     this.route.paramMap.subscribe(() => {
       this.listProducts();
     });
+  }
+
+  loadAllProducts() {
+    this.productService.getAllProducts().subscribe(
+      data => {
+        this.products = data;
+      }
+    );
   }
 
   listProducts() {
@@ -66,20 +78,16 @@ export class ProductListComponent {
 
     if (hasCategoryId) {
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+
+      // Kategori seçiliyse o kategorideki ürünleri getir
+      this.productService.getProductListPaginate(this.thePageNumber - 1,
+                                               this.thePageSize,
+                                               this.currentCategoryId)
+        .subscribe(this.processResult());
     } else {
-      this.currentCategoryId = 10;
+      // Kategori seçili değilse tüm ürünleri getir
+      this.loadAllProducts();
     }
-
-    if (this.previousCategoryId != this.currentCategoryId) {
-      this.thePageNumber = 1;
-    }
-
-    this.previousCategoryId = this.currentCategoryId;
-
-    this.productService.getProductListPaginate(this.thePageNumber - 1,
-                                             this.thePageSize,
-                                             this.currentCategoryId)
-      .subscribe(this.processResult());
   }
 
   updatePageSize(pageSize: string) {
