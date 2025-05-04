@@ -5,7 +5,11 @@ import com.cagkankantarci.e_ticaret.payload.request.LoginRequest;
 import com.cagkankantarci.e_ticaret.repository.UserRepository;
 import com.cagkankantarci.e_ticaret.security.JwtUtils;
 import com.cagkankantarci.e_ticaret.service.UserService;
+
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,4 +38,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(loginRequest.getUsername())
             .orElseThrow(() -> new RuntimeException("Hata: Kullanıcı bulunamadı."));
     }
+
+    @Override
+    public User findByUsername(String name) {
+        return userRepository.findByUsername(name)
+            .orElseThrow(() -> new RuntimeException("Hata: Kullanıcı bulunamadı."));
+    }
 }
+

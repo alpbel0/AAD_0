@@ -100,14 +100,17 @@ export class LoginComponent {
       return;
     }
 
-    this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/products']);
-        },
-        error: error => {
-          this.errorMessage = error?.error?.message || 'Giriş başarısız';
-        }
-      });
+    const username = this.loginForm.get('username')!.value;
+    const password = this.loginForm.get('password')!.value;
+
+    this.authService.login(username, password).subscribe({
+      next: (data) => {
+        // Kullanıcıyı rolüne göre doğru sayfaya yönlendirin
+        this.authService.redirectBasedOnRole();
+      },
+      error: (err) => {
+        this.errorMessage = 'Giriş başarısız. Kullanıcı adı veya şifre hatalı.';
+      }
+    });
   }
 }

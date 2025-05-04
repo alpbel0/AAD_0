@@ -30,17 +30,10 @@ import { NavbarComponent } from './components/navbar/navbar.component';
     NavbarComponent
   ],
   template: `
-    <div class="page-wrapper">
-      <app-navbar> </app-navbar>
-      <div class="content-wrapper">
-        <aside class="menu-sidebar d-none d-lg-block">
-          <app-product-category-menu></app-product-category-menu>
-        </aside>
-        <div class="main-content">
-          <router-outlet></router-outlet>
-        </div>
-      </div>
-    </div>
+  <app-navbar></app-navbar>
+  <div class="container mt-4">
+    <router-outlet></router-outlet>
+  </div>
   `,
   styleUrls: ['./app.component.css'],
   providers: [ProductService, KalorisizKodFormService, CheckoutService]

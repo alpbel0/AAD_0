@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { SellerService } from '../../../../services/seller.service';
+
+
+
 
 @Component({
   selector: 'app-seller-products',
@@ -19,21 +23,22 @@ export class SellerProductsComponent implements OnInit {
   productForm!: FormGroup;
   editingProductId: number | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private sellerService: SellerService) {
     this.createForm();
   }
 
   ngOnInit(): void {
-    // Normalde bir servis üzerinden ürünler çekilecek
-    setTimeout(() => {
-      this.products = [
-        { id: 1, name: 'Gaming Laptop', description: 'Yüksek performanslı oyuncu bilgisayarı', price: 15999.99, stock: 20, category: 'Elektronik', imageUrl: 'https://via.placeholder.com/150', active: true },
-        { id: 2, name: 'Akıllı Telefon', description: '6.5 inç ekranlı akıllı telefon', price: 9999.99, stock: 50, category: 'Elektronik', imageUrl: 'https://via.placeholder.com/150', active: true },
-        { id: 3, name: 'Kablosuz Kulaklık', description: 'Gürültü önleyici özellikli kulaklık', price: 2499.50, stock: 100, category: 'Elektronik', imageUrl: 'https://via.placeholder.com/150', active: true },
-        { id: 4, name: 'Pamuklu Tişört', description: '%100 pamuk yazlık tişört', price: 299.90, stock: 200, category: 'Giyim', imageUrl: 'https://via.placeholder.com/150', active: false }
-      ];
-      this.loading = false;
-    }, 800);
+    this.loading = true;
+    this.sellerService.getSellerProducts().subscribe({
+      next: (data) => {
+        this.products = data;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Ürün yükleme hatası:', error);
+        this.loading = false;
+      }
+    });
   }
 
   createForm(): void {
@@ -73,19 +78,31 @@ export class SellerProductsComponent implements OnInit {
     this.editingProductId = null;
   }
 
+  // addProduct metodunu değiştirin
   addProduct(): void {
     if (this.productForm.invalid) {
       return;
     }
 
-    const newProduct = {
-      id: this.products.length + 1, // Gerçek uygulamada backend tarafından atanır
-      ...this.productForm.value
-    };
+    // Sorun 1: Console log ekleyin ve formun değerlerini kontrol edin
+    console.log('Form değerleri:', this.productForm.value);
 
-    this.products.push(newProduct);
-    this.closeModals();
-    // Burada normalde bir API çağrısı yapılacak
+    const newProduct = this.productForm.value;
+    this.loading = true;
+
+    this.sellerService.addProduct(newProduct).subscribe({
+      next: (response) => {
+        console.log('Başarılı yanıt:', response); // Sorun 2: Response'u kontrol edin
+        this.products.push(response);
+        this.closeModals();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Ürün ekleme hatası:', error); // Sorun 3: Hata detayını kontrol edin
+        this.loading = false;
+        alert('Ürün eklenirken bir hata oluştu: ' + error.message);
+      }
+    });
   }
 
   updateProduct(): void {

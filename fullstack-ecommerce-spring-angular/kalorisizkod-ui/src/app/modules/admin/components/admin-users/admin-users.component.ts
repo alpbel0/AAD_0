@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AdminService } from '../../../../services/admin.service';
 
 @Component({
   selector: 'app-admin-users',
@@ -21,21 +22,21 @@ export class AdminUsersComponent implements OnInit {
   searchTerm: string = '';
   filteredUsers: any[] = [];
 
-  constructor() { }
+  constructor(private adminService: AdminService) { }
 
   ngOnInit(): void {
-    // Normalde bir servis üzerinden kullanıcılar çekilecek
-    setTimeout(() => {
-      this.users = [
-        { id: 1, username: 'johndoe', email: 'john@example.com', role: 'USER', status: 'Aktif', registeredDate: '2023-05-15' },
-        { id: 2, username: 'janesmith', email: 'jane@example.com', role: 'USER', status: 'Aktif', registeredDate: '2023-06-20' },
-        { id: 3, username: 'admin', email: 'admin@example.com', role: 'ADMIN', status: 'Aktif', registeredDate: '2023-01-10' },
-        { id: 4, username: 'seller1', email: 'seller@example.com', role: 'SELLER', status: 'Aktif', registeredDate: '2023-03-22' },
-        { id: 5, username: 'blockeduser', email: 'blocked@example.com', role: 'USER', status: 'Engelli', registeredDate: '2023-04-05' }
-      ];
-      this.filteredUsers = [...this.users];
-      this.loading = false;
-    }, 800);
+    this.loading = true;
+    this.adminService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.filteredUsers = [...this.users];
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Kullanıcı yükleme hatası:', error);
+        this.loading = false;
+      }
+    });
   }
 
   search(): void {
